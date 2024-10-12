@@ -1,23 +1,26 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include "menu.h"
 #include "quiz.h"
 
+int chr2hex(char ch);
+
 void menu_select(void)
 {
-/* just use goto */
 while (1) {
-	int sel;
 	char ch;
 	printf("Select Menu(0: list)\n> ");
-	while (scanf("%x", &sel) != 1) {
-		while ((ch = getchar()) != '\n')
-			if (ch == EOF) return;
-		printf("Select Menu(0: list)\n> ");
-	}
+	ch = getchar();
+	if (ch == EOF)
+		exit(EXIT_SUCCESS);
+	else if (ch == '\n')
+		continue;
 	while (getchar() != '\n')
 		;
+	if (ch == 'q') exit(EXIT_SUCCESS);
+	ch = chr2hex(ch);
 
-	switch (sel) {
+	switch (ch) {
 	case 0x0:
 		menu_list();
 		continue;
@@ -37,6 +40,6 @@ void menu_list(void)
 {
 	printf("1 - Hex to Bin Quiz\n");
 	printf("2 - Bin to Hex Quiz\n");
-	printf("f - Quit\n");
+	printf("q - Quit\n");
 	printf("\n");
 }

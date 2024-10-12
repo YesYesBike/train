@@ -30,13 +30,41 @@ int bin_decode(int hex)
 	return ret;
 }
 
+int chr2hex(char ch)
+{
+	switch (ch) {
+	case '0':
+	case '1':
+	case '2':
+	case '3':
+	case '4':
+	case '5':
+	case '6':
+	case '7':
+	case '8':
+	case '9':
+		return ch - 48;
+
+	case 'a':
+	case 'b':
+	case 'c':
+	case 'd':
+	case 'e':
+	case 'f':
+		return ch - 87;
+
+	case 'A':
+	case 'B':
+	case 'C':
+	case 'D':
+	case 'E':
+	case 'F':
+		return ch - 55;
+	}
+}
+
 void quiz_hex2bin(void)
 {
-/* Why I used goto here
- * 1. I don't want to reset number while keep pressing enter
- * 2. See menu_select()
- * 3. I don't have a skill to write a good code
- */
 L_HEX_START:
 	srand((unsigned)time(0));
 	int que = rand() % HEX_ARR_LEN;
@@ -44,9 +72,8 @@ L_HEX_START:
 	char buf[BUFSIZE];
 
 L_HEX_ENTER_NUMBER:
-	printf("%c: Enter the binary number\n> ", ch);
-	fgets(buf, BUFSIZE, stdin);
-	if (buf != NULL) {
+	printf("%c: Enter the binary number   (m: main, q: quit)\n> ", ch);
+	if (fgets(buf, BUFSIZE, stdin) != NULL) {
 		int i = 0;
 		while (buf[i] != '\n' && buf[i] != '\0')
 			i++;
@@ -55,11 +82,15 @@ L_HEX_ENTER_NUMBER:
 		else
 			while (getchar() != '\n')
 				;
+	} else {
+		exit(EXIT_SUCCESS);
 	}
 
 	if (buf[0] == 0)
 		goto L_HEX_ENTER_NUMBER;
 	else if (buf[0] == 'q')
+		exit(EXIT_SUCCESS);
+	else if (buf[0] == 'm')
 		return;
 
 	for (int i=0; i<BUFSIZE-1; i++) {
@@ -84,17 +115,21 @@ void quiz_bin2hex(void)
 while (1) {
 	srand((unsigned)time(0));
 	int que = rand() % HEX_ARR_LEN;
-	int ans;
-	char ch;
+	char ans;
 
-	printf("%04d: Enter the hex number\n> ", bin_decode(que));
-	while (scanf("%x", &ans) != 1) {
-		while ((ch = getchar()) != '\n')
-			if (ch == EOF) return;
-		printf("%04d: Enter the hex number\n> ", bin_decode(que));
-	}
+	printf("%04d: Enter the hex number   (m: main, q: quit)\n> ", bin_decode(que));
+	ans = getchar();
+	if (ans == EOF)
+		exit(EXIT_SUCCESS);
+	else if (ans == '\n')
+		continue;
 	while (getchar() != '\n')
 		;
+	if (ans == 'q')
+		exit(EXIT_SUCCESS);
+	else if (ans == 'm')
+		return;
+	ans = chr2hex(ans);
 
 	if (ans == que)
 		printf("Correct!\n");
